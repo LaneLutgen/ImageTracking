@@ -7,7 +7,6 @@ Created on Feb 14, 2017
 import numpy as np
 import cv2
 
-
 x_coor = 0
 y_coor = 0
 height = 0
@@ -18,14 +17,28 @@ def mouseCall(evt, x, y, flags, pic):
     global x_coor
     global y_coor
     if evt == cv2.EVENT_LBUTTONDOWN:
-        print("Coordinates set")
         x_coor = x
-        y_coor = y
-        print("X: %d" % x_coor)
-        print("Y: %d" % y_coor)
-        print(hsvValue)
-        
-        
+        y_coor = y    
+  
+def adjust_min_r(value):
+    print("magic")
+    
+def adjust_min_g(value):
+    print("magic")
+    
+def adjust_min_b(value):
+    print("magic")
+    
+def adjust_max_r(value):
+    print("magic")
+    
+def adjust_max_g(value):
+    print("magic")
+    
+def adjust_max_b(value):
+    print("magic")          
+  
+     
 #Main
 cap = cv2.VideoCapture(0)
 cv2.namedWindow("Video")
@@ -33,6 +46,14 @@ cv2.namedWindow("HSV")
 
 #Set mouse callback function
 cv2.setMouseCallback("HSV", mouseCall, None)
+
+#Create the sliders for mins and maxes
+cv2.createTrackbar("Min R", "Video", 255, 255, adjust_min_r)
+cv2.createTrackbar("Min G", "Video", 255, 255, adjust_min_g)
+cv2.createTrackbar("Min B", "Video", 255, 255, adjust_min_b)
+cv2.createTrackbar("Max R", "Video", 255, 255, adjust_max_r)
+cv2.createTrackbar("Max G", "Video", 255, 255, adjust_max_g)
+cv2.createTrackbar("Max B", "Video", 255, 255, adjust_max_b)
 
 while True:
     #Read the frame
