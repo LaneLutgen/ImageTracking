@@ -7,42 +7,62 @@ Created on Feb 14, 2017
 import numpy as np
 import cv2
 
+#Coordinates used for mouse click
 x_coor = 0
 y_coor = 0
+
+#Height and width of the video feed
 height = 0
 width = 0
-hsvValue = np.uint8([0,0,0]) 
+
+#Array to store HSV value from a click
+hsvValue = np.uint8([0,0,0])
+
+#Globals for setting the min and max RGB values 
+minR = 0
+maxR = 0
+minG = 0
+maxG = 0
+minB = 0
+maxB = 0
     
 def mouseCall(evt, x, y, flags, pic):
     global x_coor
     global y_coor
     if evt == cv2.EVENT_LBUTTONDOWN:
         x_coor = x
-        y_coor = y    
+        y_coor = y 
+        print(hsvValue)   
   
 def adjust_min_r(value):
-    print("magic")
+    global minR
+    minR = value
     
 def adjust_min_g(value):
-    print("magic")
+    global minG
+    minG = value
     
 def adjust_min_b(value):
-    print("magic")
+    global minB
+    minB = value
     
 def adjust_max_r(value):
-    print("magic")
+    global maxR
+    maxR = value
     
 def adjust_max_g(value):
-    print("magic")
+    global maxG
+    maxG = value
     
 def adjust_max_b(value):
-    print("magic")          
-  
+    global maxB
+    maxB = value          
      
 #Main
 cap = cv2.VideoCapture(0)
 cv2.namedWindow("Video")
 cv2.namedWindow("HSV")
+cv2.namedWindow("Tracking Window")
 
 #Set mouse callback function
 cv2.setMouseCallback("HSV", mouseCall, None)
@@ -62,9 +82,16 @@ while True:
     #Convert from BGR to HSV
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     
+    #Get a grayscale frame from the tracked color
+    minRGB = np.array([minB, minG, minR])
+    maxRGB = np.array([maxB, maxG, maxR])
+    
+    trackingFrame = cv2.inRange(hsv, minRGB, maxRGB)
+    
     #Show all the windows
     cv2.imshow("Video", img)
     cv2.imshow("HSV", hsv)
+    cv2.imshow("Tracking Window", trackingFrame)
     
     if x_coor != 0 and y_coor != 0:
         hsvValue = hsv[y_coor, x_coor]
