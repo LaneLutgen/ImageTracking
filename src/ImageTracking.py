@@ -32,6 +32,9 @@ minG = 0
 maxG = 0
 minB = 0
 maxB = 0
+
+#Value used for erosion and dilation
+erosionVal = 50
     
 def mouseCall(evt, x, y, flags, pic):
     global x_coor
@@ -80,8 +83,12 @@ def adjust_max_g(value):
     
 def adjust_max_b(value):
     global maxB
-    maxB = value          
-     
+    maxB = value
+    
+def erosion(value):
+    global erosionVal
+    erosionVal = value             
+        
 #Main
 cap = cv2.VideoCapture(0)
 cv2.namedWindow("Video")
@@ -98,6 +105,7 @@ cv2.createTrackbar("Min G", "Video", 0, 255, adjust_min_g)
 cv2.createTrackbar("Max G", "Video", 0, 255, adjust_max_g)
 cv2.createTrackbar("Min B", "Video", 0, 255, adjust_min_b)
 cv2.createTrackbar("Max B", "Video", 0, 255, adjust_max_b)
+cv2.createTrackbar("Erosion/Dilation", "Video", 50, 100, erosion)
 
 while True:
     #Read the frame
@@ -112,6 +120,12 @@ while True:
     
     
     mask = cv2.inRange(hsv, minBGR, maxBGR)
+    
+    kernel = np.ones((5,5), np.uint8)
+    if erosionVal < 50:
+        mask = cv2.erode(mask, kernel, iterations=(50 - erosionVal))
+    elif erosionVal > 50:
+        mask = cv2.dilate(mask, kernel, iterations=(erosionVal - 50))  
     
     #Show all the windows
     cv2.imshow("Video", img)
