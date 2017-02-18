@@ -16,7 +16,14 @@ height = 0
 width = 0
 
 #Array to store HSV value from a click
-hsvValue = np.uint8([0,0,0])
+hsvValue = np.array([0,0,0], dtype = "uint8")
+bgrValue = np.array([0,0,0], dtype = "uint8")
+
+minBGR = np.array([0,0,0], dtype = "uint8")
+maxBGR = np.array([0,0,0], dtype = "uint8")
+
+minHSV = np.array([0,0,0], dtype = "uint8")
+maxHSV = np.array([0,0,0], dtype = "uint8")
 
 #Globals for setting the min and max RGB values 
 minR = 0
@@ -29,10 +36,27 @@ maxB = 0
 def mouseCall(evt, x, y, flags, pic):
     global x_coor
     global y_coor
+    global hsvValue
+    global bgrValue
+    global minHSV
+    global maxHSV
+    global minBGR
+    global maxBGR
     if evt == cv2.EVENT_LBUTTONDOWN:
         x_coor = x
         y_coor = y 
-        print(hsvValue)   
+        print("HSV Value")
+        print(hsvValue) 
+        print("BGR Value")
+        print(bgrValue) 
+        print("Min HSV")
+        print(minHSV)
+        print("Max HSV")
+        print(maxHSV) 
+        print("Min BGR")
+        print(minBGR)
+        print("Max BGR")
+        print(maxBGR)
   
 def adjust_min_r(value):
     global minR
@@ -68,12 +92,12 @@ cv2.namedWindow("Tracking Window")
 cv2.setMouseCallback("HSV", mouseCall, None)
 
 #Create the sliders for mins and maxes
-cv2.createTrackbar("Min R", "Video", 255, 255, adjust_min_r)
-cv2.createTrackbar("Min G", "Video", 255, 255, adjust_min_g)
-cv2.createTrackbar("Min B", "Video", 255, 255, adjust_min_b)
-cv2.createTrackbar("Max R", "Video", 255, 255, adjust_max_r)
-cv2.createTrackbar("Max G", "Video", 255, 255, adjust_max_g)
-cv2.createTrackbar("Max B", "Video", 255, 255, adjust_max_b)
+cv2.createTrackbar("Min R", "Video", 0, 255, adjust_min_r)
+cv2.createTrackbar("Max R", "Video", 0, 255, adjust_max_r)
+cv2.createTrackbar("Min G", "Video", 0, 255, adjust_min_g)
+cv2.createTrackbar("Max G", "Video", 0, 255, adjust_max_g)
+cv2.createTrackbar("Min B", "Video", 0, 255, adjust_min_b)
+cv2.createTrackbar("Max B", "Video", 0, 255, adjust_max_b)
 
 while True:
     #Read the frame
@@ -83,18 +107,22 @@ while True:
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     
     #Get a grayscale frame from the tracked color
-    minRGB = np.array([minB, minG, minR])
-    maxRGB = np.array([maxB, maxG, maxR])
+    minBGR = np.array([minB, minG, minR])
+    maxBGR = np.array([maxB, maxG, maxR])
     
-    trackingFrame = cv2.inRange(hsv, minRGB, maxRGB)
+    #minHSV = cv2.cvtColor(minBGR, cv2.COLOR_BGR2HSV)
+    #maxHSV = cv2.cvtColor(maxBGR, cv2.COLOR_BGR2HSV)
+    
+    mask = cv2.inRange(img, minBGR, maxBGR)
     
     #Show all the windows
     cv2.imshow("Video", img)
     cv2.imshow("HSV", hsv)
-    cv2.imshow("Tracking Window", trackingFrame)
+    cv2.imshow("Tracking Window", mask)
     
     if x_coor != 0 and y_coor != 0:
         hsvValue = hsv[y_coor, x_coor]
+        bgrValue = img[y_coor, x_coor]
     
     #Press q to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
