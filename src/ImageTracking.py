@@ -110,10 +110,8 @@ while True:
     minBGR = np.array([minB, minG, minR])
     maxBGR = np.array([maxB, maxG, maxR])
     
-    #minHSV = cv2.cvtColor(minBGR, cv2.COLOR_BGR2HSV)
-    #maxHSV = cv2.cvtColor(maxBGR, cv2.COLOR_BGR2HSV)
     
-    mask = cv2.inRange(img, minBGR, maxBGR)
+    mask = cv2.inRange(hsv, minBGR, maxBGR)
     
     #Show all the windows
     cv2.imshow("Video", img)
