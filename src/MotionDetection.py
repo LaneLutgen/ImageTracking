@@ -10,7 +10,8 @@ import cv2
 #Main
 cap = cv2.VideoCapture(0)
 cv2.namedWindow("Video")
-cv2.namedWindow("Thresh")
+cv2.namedWindow("Edge Detection")
+cv2.namedWindow("Threshold")
 
 status, img = cap.read()
 
@@ -22,9 +23,20 @@ floating = np.zeros((height, width, 3), np.float32)
 cloneImage = None
 difference = np.zeros((height, width, 3), np.uint8)
 
+grayThreshold = 200;
+
 while True:
     #Read the frame
     status, img = cap.read()
+    
+    #Brighten image
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) #convert it to hsv
+
+    h, s, v = cv2.split(hsv)
+    v += 255
+    final_hsv = cv2.merge((h, s, v))
+
+    img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
     
     #Capture current image state
     cloneImage = img
@@ -50,7 +62,15 @@ while True:
     #Grayscale difference image
     grayscale = cv2.cvtColor(difference, cv2.COLOR_RGB2GRAY)
     
-    cv2.imshow("Thresh", grayscale)
+    #Show image with edge detection
+    cv2.imshow("Edge Detection", grayscale)
+    
+    blur2 = cv2.blur(grayscale,(5,5))
+    
+    #Threshold the image
+    ret,thresh = cv2.threshold(blur2, 25, 255, cv2.THRESH_BINARY_INV)
+    
+    cv2.imshow("Threshold", thresh)
     
     #Press q to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
