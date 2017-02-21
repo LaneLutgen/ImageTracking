@@ -29,20 +29,17 @@ while True:
     #Read the frame
     status, img = cap.read()
     
-    #Brighten image
+    #Brighten image by increasing V with the image in HSV
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV) #convert it to hsv
-
     h, s, v = cv2.split(hsv)
     v += 255
     final_hsv = cv2.merge((h, s, v))
 
+    #Convert back to BGR
     img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
     
     #Capture current image state
     cloneImage = img
-    
-    #Show all the windows
-    cv2.imshow("Video", img)
     
     #Blur Image
     blur = cv2.blur(img,(5,5))
@@ -71,6 +68,26 @@ while True:
     ret,thresh = cv2.threshold(blur2, 25, 255, cv2.THRESH_BINARY_INV)
     
     cv2.imshow("Threshold", thresh)
+    
+    img2, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_LIST, cv2.CHAIN_APPROX_NONE)
+
+    ht, wt = thresh.shape
+    min_x, min_y = wt, ht
+    max_x = max_y = 0
+
+    #For each contour keep track of min, max x and y values
+    for contour in contours:
+        (x,y,w,h) = cv2.boundingRect(contour)
+        min_x = min(x, min_x)
+        max_x = max(x+w, max_x)
+        min_y = min(y, min_y)
+        max_y = max(y+h, max_y)
+        #If bounding rectangle is larger than 75x75, draw it
+        if w > 75 and h > 75:
+            cv2.rectangle(img, (x,y), (x+w,y+h), (0, 0, 255), 2)
+        
+    #Show frame with rectangles
+    cv2.imshow("Video", img)
     
     #Press q to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
