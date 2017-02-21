@@ -105,7 +105,7 @@ cv2.createTrackbar("Min G", "Video", 0, 255, adjust_min_g)
 cv2.createTrackbar("Max G", "Video", 0, 255, adjust_max_g)
 cv2.createTrackbar("Min B", "Video", 0, 255, adjust_min_b)
 cv2.createTrackbar("Max B", "Video", 0, 255, adjust_max_b)
-cv2.createTrackbar("Erosion/Dilation", "Video", 50, 100, erosion)
+cv2.createTrackbar("Erosion", "Video", 50, 100, erosion)
 
 while True:
     #Read the frame
